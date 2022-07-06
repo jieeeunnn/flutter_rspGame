@@ -1,6 +1,6 @@
 # flutter_game1
 
-A new Flutter project.
+가위바위보 게임
 
 ## Getting Started
 
