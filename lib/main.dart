@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'PlayGame.dart';
 
 void main() => runApp(MyApp());
 
@@ -33,7 +33,7 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
   PlayGame playGame = PlayGame();
 
-  void _showWinner(bool isWinner){
+  void _showWinner(bool isWinner){ // 승자를 판별하는 함수
     showDialog(
         context: context,
         builder: (_) => Center(
@@ -48,13 +48,13 @@ class _GameState extends State<Game> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text( isWinner ? "가뿐히 이겼습니다" : "뭐 패배는 인정합니다", style:(
+                Text( isWinner ? "플레이어가 이겼습니다" : "컴퓨터가 이겼습니다", style:( // isWinner가 true면 플레이어 승, isWinner가 false면 컴퓨터 승
                     TextStyle(decoration: TextDecoration.none,color: Colors.black,fontSize: 20, fontWeight: FontWeight.bold)
                 )),
                 SizedBox(height: 16,),
                 SizedBox(
                     height: 46,
-                    child: Text( isWinner ? '너무 쉬워서 하품이 나왔습니다' : '하지만 전 아직 최선을 다하지 않았습니다', style:(
+                    child: Text( isWinner ? '축하합니다!' : '다시 도전하세요!', style:(
                         TextStyle(decoration: TextDecoration.none,color: Colors.black,fontSize: 16)
                     ))
                 )
@@ -67,8 +67,11 @@ class _GameState extends State<Game> {
                         minimumSize: Size(double.infinity, 56) // put the width and height you want
                     ),
                     onPressed:(){
-                      setState(() {
-
+                      setState(() { // 확인 버튼을 누르면 모든 점수가 초기화
+                        playGame.me = 0;
+                        playGame.computer = 0;
+                        playGame.counter = 0;
+                        playGame.myCounter = 0;
                       });
                       Navigator.pop(context);
                     },
@@ -86,9 +89,8 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
 
       Future.delayed(Duration.zero,(){
-        if(playGame.counter==5){
+        if(playGame.counter==5){ // 게임 횟수가 5회가 되면 게임 종료 후 승자 판별
           _showWinner(true);
-          playGame.counter=0;
         }
     });
 
@@ -118,40 +120,34 @@ class _GameState extends State<Game> {
             SizedBox(
               height: 60.0,
             ),
-            Row(
+            Row( // 바위, 가위, 보 순으로 버튼 나열 (바위=0, 가위=1, 보=2)
               children: <Widget>[
                 Expanded(
-                  child: TextButton(onPressed: () {
+                  child: TextButton(onPressed: () { // 바위 버튼
                     setState(() {
                       playGame.clickRandom();
                       playGame.score();
                       playGame.meClick(0);
-                      // if(computer == 0) print("rock");
-                      // me = "rock";
                     });
                   }, child: Image.asset('assets/rock.png'),
                   ),
                 ),
                 Expanded(
-                  child: TextButton(onPressed: () {
+                  child: TextButton(onPressed: () { // 가위 버튼
                     setState(() {
                       playGame.clickRandom();
                       playGame.score();
                       playGame.meClick(1);
-                      // if(computer == 1) print("scissor");
-                      // me = "scissor";
                     });
                   }, child: Image.asset('assets/scissors.png'),
                   ),
                 ),
                 Expanded(
-                  child: TextButton(onPressed: () {
+                  child: TextButton(onPressed: () { // 보 버튼
                     setState(() {
                       playGame.clickRandom();
                       playGame.score();
                       playGame.meClick(2);
-                      // if(computer == 0) print("paper");
-                      // me = "paper";
                     });
                   }, child: Image.asset('assets/paper.png'),
                   ),
@@ -161,7 +157,7 @@ class _GameState extends State<Game> {
             SizedBox(
               height: 60.0,
             ),
-            Text('컴퓨터: ${playGame.computer.toString()}',
+            Text('컴퓨터: ${playGame.computer.toString()}', // 컴퓨터에서 랜덤 생성한 버튼 표시
               style: TextStyle(
                 color: Colors.black,
                 letterSpacing: 2.0,
@@ -171,7 +167,7 @@ class _GameState extends State<Game> {
             SizedBox(
               height: 20.0,
             ),
-            Text('나: ${playGame.me.toString()}',
+            Text('나: ${playGame.me.toString()}', // 내가 선택한 버튼 표시
               style: TextStyle(
                 color: Colors.black,
                 letterSpacing: 2.0,
@@ -181,7 +177,17 @@ class _GameState extends State<Game> {
             SizedBox(
               height: 20.0,
             ),
-            Text('점수: ${playGame.counter.toString()}',
+            Text('내 점수: ${playGame.myCounter.toString()}', // 내가 이겼을 경우 내 점수 +1
+              style: TextStyle(
+                color: Colors.black,
+                letterSpacing: 2.0,
+                fontSize: 15.0,
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Text('게임 횟수: ${playGame.counter.toString()}', // 바위, 가위, 보 중 버튼을 누를 때마다 게임 횟수 +1
               style: TextStyle(
                 color: Colors.black,
                 letterSpacing: 2.0,
@@ -193,9 +199,12 @@ class _GameState extends State<Game> {
               height: 100.0,
             ),
             Center(
-              child: TextButton(onPressed: () {
+              child: TextButton(onPressed: () { // 초기화 버튼을 누르면 컴퓨터에서 랜덤 생성한 버튼, 내가 누른 버튼, 내 점수, 게임 횟수가 모두 0으로 초기화
                 setState(() {
+                  playGame.me = 0;
+                  playGame.computer = 0;
                   playGame.counter = 0;
+                  playGame.myCounter = 0;
                 });
               },
                 child: Text('초기화',
@@ -210,48 +219,6 @@ class _GameState extends State<Game> {
         ),
       ),
     );
-  }
-}
-
-class PlayGame{
-  
-  var computer=0;
-  int me = 0;
-  int counter = 0;
-
-  void meClick(int my){
-    me = my;
-  }
-
-  void clickRandom(){
-    computer = Random().nextInt(3);
-  }
-  void score(){
-    if(computer == 0) { // 컴퓨터가 바위를 낸 경우
-      if(me == 0) {print("비겼습니다");}
-      else if (me == 1) {print("컴퓨터가 이겼습니다");}
-      else if (me == 2) {
-        counter++;
-        print("플레이어가 이겼습니다");}
-      print(counter);
-    }
-    else if(computer == 1) {
-     
-      if(me == 0) {
-        counter++;
-        print("플레이어가 이겼습니다");}
-      else if(me == 1) {print("비겼습니다");}
-      else if (me == 2) {print("컴퓨터가 이겼습니다");}
-      print(counter);
-    }
-    else if(computer == 2) { // 컴퓨터가 보를 낸 경우
-      if(me == 0) {print("컴퓨터가 이겼습니다");}
-      else if(me == 1) {
-        counter++;
-        print("플레이어가 이겼습니다");}
-      else if (me == 2) {print("비겼습니다");}
-      print(counter);
-    }
   }
 }
 
